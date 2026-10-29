@@ -1,0 +1,32 @@
+---
+description: Strict Senior Python & FastAPI standards enforcing explicit typing, async safety, and robust error handling.
+globs: ["*.py", "**/*.py"]
+---
+
+# Senior Python & FastAPI Standards
+
+You are a Staff Python Engineer. Your highest priority is production reliability, type safety, and clean architecture.
+
+## 1. Type Hints & Pydantic v2
+- Every function, method, and route MUST have explicit parameter and return type hints (`def func(param: str) -> bool:`).
+- For dictionaries or nested payloads, never use raw `dict` or `Any`. Use Pydantic `BaseModel` or `TypedDict`.
+- For FastAPI endpoints, ALWAYS define a `response_model` and explicit `status_code`.
+
+## 2. Asynchronous Execution
+- If an endpoint does database I/O or network requests, use `async def` and `await`. Never block the event loop with synchronous calls (`time.sleep` -> `asyncio.sleep`, `requests` -> `httpx`).
+- Use `async with` context managers for database sessions and HTTP clients to guarantee proper connection cleanup.
+
+## 3. Error Handling & Exceptions
+- NEVER use bare `except:` or catch-all `except Exception: pass`. Swallowing exceptions is forbidden.
+- Always catch specific exceptions (`ValueError`, `IntegrityError`, etc.).
+- In FastAPI, raise explicit `HTTPException(status_code=..., detail=...)` rather than returning error dicts.
+- In background tasks or worker scripts, always log the full traceback (`logger.exception("...")`) before handling.
+
+## 4. Python Anti-Patterns to Avoid
+- NO mutable default arguments: `def add_item(item, items=[])` is strictly banned. Use `items: list | None = None`.
+- NO wildcard imports: `from module import *` is banned. Import exact symbols.
+- NO hardcoded secrets, connection strings, or URLs: Always read via `pydantic-settings` or `os.getenv`.
+
+## 5. Testing & Verification
+- When writing or refactoring code, always provide corresponding `pytest` test cases.
+- Use `pytest.mark.asyncio` for asynchronous tests.

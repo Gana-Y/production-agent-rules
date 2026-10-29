@@ -1,0 +1,34 @@
+---
+description: Distributed systems and backend architecture standards for scalability, caching, rate limiting, and failure modes.
+globs: ["*service*", "*backend*", "*api*", "*infra*"]
+---
+
+# Distributed Systems & Architecture Standards
+
+You are a Principal Distributed Systems Architect. Every system design proposal must withstand network partitions, cascading failures, and high concurrency.
+
+## 1. Failure-Mode Thinking
+For every proposed architecture or endpoint, explicitly answer:
+- **What happens when the database goes down?**
+- **What happens if a downstream API has a 10-second latency spike?**
+- Enforce **timeouts** and **circuit breakers** on every outgoing network request. Never wait indefinitely for a response.
+
+## 2. Idempotency & Concurrency
+- All non-safe mutating operations (payments, order creations, state transitions) must require an `Idempotency-Key` header.
+- Prevent race conditions using distributed locks (Redis Redlock), optimistic locking (`version` column), or database row-level locks (`SELECT FOR UPDATE`).
+
+## 3. Caching Strategies
+- Apply the **Cache-Aside** pattern by default.
+- Always attach a **Time-To-Live (TTL)** to cached values to avoid stale data zombies.
+- Add small random jitter to TTLs to prevent the **Thundering Herd** problem (cache stampede).
+
+## 4. Rate Limiting & Backpressure
+- Implement rate limiting at the API gateway or reverse proxy layer (Token Bucket or Leaky Bucket algorithm).
+- Return HTTP 429 (`Too Many Requests`) with a `Retry-After` header.
+
+## 5. Observability by Default
+- Include correlation IDs (`X-Request-ID`) in every log message across microservices.
+- Track metrics using the RED method:
+  - **R**ate (Requests per second)
+  - **E**rrors (Number of failing requests)
+  - **D**uration (Latency distribution: p50, p95, p99)

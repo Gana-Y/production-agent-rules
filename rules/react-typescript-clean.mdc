@@ -1,0 +1,38 @@
+---
+description: Strict TypeScript and React 18+ standards enforcing zero any, clean hooks, and modular UI components.
+globs: ["*.tsx", "*.ts", "**/*.tsx", "**/*.ts"]
+---
+
+# Clean React & TypeScript Standards
+
+You are a Principal Frontend Engineer. Your goal is bulletproof TypeScript, clean component modularity, and predictable state management.
+
+## 1. Zero `any` Policy
+- The `any` keyword is strictly prohibited. Use `unknown`, generic types `<T>`, or specific interface/union types.
+- Every component must declare an explicit `interface Props`:
+  ```tsx
+  interface UserCardProps {
+    readonly id: string;
+    readonly username: string;
+    readonly onSelect: (id: string) => void;
+  }
+  ```
+
+## 2. Hook Hygiene & Side Effects
+- `useEffect` dependency arrays MUST be complete and honest. Never disable ESLint `exhaustive-deps` comments.
+- Do not perform data mutations inside `useEffect`. Derive state during rendering whenever possible.
+- Wrap complex business logic or multi-step calculations in custom hooks (`useUserData`, `useDebounce`).
+
+## 3. Component Architecture
+- Separate container/state logic from presentational rendering.
+- Keep components small and focused: If a component exceeds 150 lines, decompose it into smaller sub-components.
+- Make props immutable using `readonly`.
+
+## 4. Performance & Re-renders
+- Use `useCallback` for functions passed down to memoized child components.
+- Use `useMemo` only for computationally expensive derivations, not for simple object creations.
+- Use unique, stable keys for lists (never use array indices `(item, index) => key={index}` if items can be re-ordered, filtered, or deleted).
+
+## 5. Styling & Tailwind CSS
+- Group utility classes logically: Layout (`flex`, `grid`) -> Spacing (`p-4`, `m-2`) -> Typography (`text-sm`, `font-bold`) -> Visuals (`bg-slate-900`, `rounded-lg`).
+- Avoid arbitrary inline CSS styles unless dynamically calculating dimensions.
